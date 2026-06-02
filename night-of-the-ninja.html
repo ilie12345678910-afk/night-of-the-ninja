@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>🥷 Night of the Ninja</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Noto+Serif+JP:wght@400;700&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07070d;--paper:#f2ede3;--crane:#c0392b;--lotus:#2471a3;
+  --gold:#d4af37;--jade:#1e8449;--ronin:#7d3c98;
+  --surface:rgba(255,255,255,.05);--border:rgba(212,175,55,.18);
+  --safe-t:env(safe-area-inset-top);--safe-b:env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{height:100%;overflow:hidden;background:var(--ink)}
+body{color:var(--paper);font-family:'Rajdhani',sans-serif;overscroll-behavior:none;
+  background-image:
+    radial-gradient(ellipse 90% 50% at 20% 5%,rgba(192,57,43,.08),transparent 55%),
+    radial-gradient(ellipse 70% 80% at 80% 95%,rgba(36,113,163,.07),transparent 55%);
+}
+/* SCREENS */
+.screen{display:none;position:fixed;inset:0;z-index:10;overflow-y:auto;
+  padding:calc(16px + var(--safe-t)) 16px calc(80px + var(--safe-b));
+  flex-direction:column;align-items:center}
+.screen.active{display:flex}
+/* SCROLLABLE CONTENT */
+.page{width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;gap:14px;
+  padding-bottom:20px;min-height:100%}
+/* LOGO */
+.kanji{font-family:'Noto Serif JP';font-size:56px;line-height:1;color:var(--crane);
+  text-shadow:0 0 40px rgba(192,57,43,.5);text-align:center}
+.gtitle{font-family:'Cinzel Decorative';font-size:clamp(14px,5vw,22px);color:var(--gold);
+  letter-spacing:4px;text-align:center}
+.gsub{font-size:11px;letter-spacing:5px;color:rgba(242,237,227,.28);text-align:center;text-transform:uppercase}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:18px;width:100%;backdrop-filter:blur(10px);
+  box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
+.ct{font-family:'Cinzel Decorative';font-size:11px;color:var(--gold);letter-spacing:2.5px;
+  text-align:center;margin-bottom:14px;padding-bottom:11px;
+  border-bottom:1px solid rgba(212,175,55,.1);text-transform:uppercase}
+/* INPUTS */
+input,select{width:100%;padding:14px 16px;margin-bottom:10px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(212,175,55,.2);color:var(--paper);font-family:'Rajdhani';
+  font-size:17px;font-weight:600;border-radius:10px;outline:none;
+  -webkit-appearance:none;appearance:none}
+input:focus{border-color:var(--gold);background:rgba(212,175,55,.06)}
+input::placeholder{color:rgba(242,237,227,.2);font-weight:400}
+select option{background:#111}
+.lbl{font-size:11px;letter-spacing:1.5px;color:rgba(242,237,227,.38);
+  margin-bottom:5px;text-transform:uppercase;align-self:flex-start}
+/* BUTTONS — all min 52px touch target */
+.btn{min-height:52px;padding:0 20px;font-family:'Cinzel Decorative';font-size:12px;
+  letter-spacing:2px;border:none;cursor:pointer;border-radius:12px;
+  transition:transform .15s,box-shadow .15s;width:100%;
+  display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;
+  text-transform:uppercase;position:relative;overflow:hidden;
+  -webkit-user-select:none;user-select:none}
+.btn:active{transform:scale(.97)}
+.btn-red{background:linear-gradient(160deg,#c0392b,#7b241c);color:var(--paper);
+  box-shadow:0 4px 20px rgba(192,57,43,.4)}
+.btn-red:active{box-shadow:0 2px 10px rgba(192,57,43,.3)}
+.btn-blue{background:linear-gradient(160deg,#2471a3,#154360);color:var(--paper);
+  box-shadow:0 4px 20px rgba(36,113,163,.4)}
+.btn-gold{background:linear-gradient(160deg,var(--gold),#9a7d0a);color:#07070d;
+  box-shadow:0 4px 20px rgba(212,175,55,.3)}
+.btn-green{background:linear-gradient(160deg,#1e8449,#145a32);color:var(--paper);
+  box-shadow:0 4px 20px rgba(30,132,73,.3)}
+.btn-ghost{background:rgba(255,255,255,.06);color:rgba(242,237,227,.6);
+  border:1px solid rgba(255,255,255,.1)}
+.btn-ghost:active{background:rgba(255,255,255,.1)}
+.btn:disabled{opacity:.3;pointer-events:none}
+.btn-sm{min-height:42px;font-size:10px;border-radius:8px}
+.row{display:flex;gap:8px;width:100%}.row .btn{flex:1}
+/* DIVIDER */
+.div{width:100%;height:1px;background:rgba(212,175,55,.08);margin:4px 0}
+/* ROOM CODE */
+.rcode{font-family:'Cinzel Decorative';font-size:42px;color:var(--gold);text-align:center;
+  letter-spacing:16px;text-shadow:0 0 30px rgba(212,175,55,.5);
+  padding:18px;background:rgba(212,175,55,.06);border:1px dashed rgba(212,175,55,.25);
+  border-radius:12px;width:100%;cursor:pointer}
+/* PLAYER LIST */
+.plist{width:100%;display:flex;flex-direction:column;gap:7px}
+.pi{display:flex;align-items:center;gap:10px;padding:12px 14px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;min-height:52px}
+.pi.me{border-color:rgba(212,175,55,.28);background:rgba(212,175,55,.04)}
+.pi.dead{opacity:.35}
+.av{font-size:22px;width:36px;text-align:center;flex-shrink:0}
+.pname{font-size:15px;font-weight:700;letter-spacing:.5px;flex:1}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-g{background:var(--jade);box-shadow:0 0 8px rgba(30,132,73,.7)}
+.dot-r{background:var(--crane);box-shadow:0 0 8px rgba(192,57,43,.7)}
+/* HONOR SCORE BADGE */
+.hbadge{font-family:'Cinzel Decorative';font-size:13px;color:var(--gold);
+  background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.2);
+  border-radius:6px;padding:2px 8px}
+/* TAG */
+.tag{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;
+  letter-spacing:.8px;font-weight:700;text-transform:uppercase;border:1px solid}
+.tag-crane{color:var(--crane);border-color:rgba(192,57,43,.4);background:rgba(192,57,43,.1)}
+.tag-lotus{color:var(--lotus);border-color:rgba(36,113,163,.4);background:rgba(36,113,163,.1)}
+.tag-ronin{color:var(--ronin);border-color:rgba(125,60,152,.4);background:rgba(125,60,152,.1)}
+/* NINJA CARDS — mobile sized */
+.ncgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;width:100%}
+.nc{border-radius:12px;padding:16px 12px;cursor:pointer;text-align:center;
+  transition:transform .2s,box-shadow .2s;border:2px solid;
+  -webkit-user-select:none;user-select:none}
+.nc:active{transform:scale(.96)}
+.nc.sel{box-shadow:0 0 0 3px var(--gold),0 8px 24px rgba(212,175,55,.4)}
+.nc-spy{background:linear-gradient(160deg,#0d1f0d,#060d06);border-color:rgba(30,132,73,.45)}
+.nc-mystic{background:linear-gradient(160deg,#0f0f1f,#060608);border-color:rgba(125,60,152,.55)}
+.nc-trickster{background:linear-gradient(160deg,#1f1200,#0d0800);border-color:rgba(212,175,55,.5)}
+.nc-blind_assassin{background:linear-gradient(160deg,#1f0000,#0d0000);border-color:rgba(192,57,43,.6)}
+.nc-shinobi{background:linear-gradient(160deg,#110000,#070000);border-color:rgba(192,57,43,.9)}
+.nc-mastermind{background:linear-gradient(160deg,#0d0a1a,#040408);border-color:rgba(212,175,55,.75)}
+.nc-mirror_monk{background:linear-gradient(160deg,#00141a,#000a0d);border-color:rgba(36,113,163,.65)}
+.nc-martyr{background:linear-gradient(160deg,#141400,#0a0a00);border-color:rgba(241,196,15,.55)}
+.nc-icon{font-size:36px;margin-bottom:8px}
+.nc-rank{font-family:'Cinzel Decorative';font-size:20px;margin-bottom:5px}
+.nc-name{font-family:'Cinzel Decorative';font-size:9px;letter-spacing:1px;margin-bottom:6px;line-height:1.4}
+.nc-desc{font-size:10px;line-height:1.5;color:rgba(242,237,227,.58)}
+.nc-spy .nc-rank,.nc-spy .nc-name{color:#1e8449}
+.nc-mystic .nc-rank,.nc-mystic .nc-name{color:#9b59b6}
+.nc-trickster .nc-rank,.nc-trickster .nc-name{color:var(--gold)}
+.nc-blind_assassin .nc-rank,.nc-blind_assassin .nc-name{color:var(--crane)}
+.nc-shinobi .nc-rank,.nc-shinobi .nc-name{color:#e74c3c}
+.nc-mastermind .nc-rank,.nc-mastermind .nc-name{color:var(--gold)}
+.nc-mirror_monk .nc-rank,.nc-mirror_monk .nc-name{color:#3498db}
+.nc-martyr .nc-rank,.nc-martyr .nc-name{color:#f1c40f}
+/* HOUSE BOX */
+.hbox{width:100%;padding:16px;border-radius:12px;text-align:center}
+.hbox-crane{background:rgba(192,57,43,.12);border:2px solid rgba(192,57,43,.5)}
+.hbox-lotus{background:rgba(36,113,163,.12);border:2px solid rgba(36,113,163,.5)}
+.hbox-ronin{background:rgba(125,60,152,.12);border:2px solid rgba(125,60,152,.5)}
+.hbox-title{font-family:'Cinzel Decorative';font-size:18px;letter-spacing:3px;margin-bottom:4px}
+.crane-text{color:var(--crane)}.lotus-text{color:var(--lotus)}.ronin-text{color:var(--ronin)}
+/* PHASE BANNER */
+.pbanner{width:100%;padding:14px;border-radius:10px;text-align:center;
+  font-family:'Cinzel Decorative';font-size:13px;letter-spacing:2.5px;
+  background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.18);color:var(--gold)}
+/* GAME LOG */
+.glog{width:100%;height:120px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;overflow-y:auto;padding:10px;font-size:12px;line-height:1.9}
+.glog::-webkit-scrollbar{width:3px}
+.glog::-webkit-scrollbar-thumb{background:rgba(212,175,55,.2);border-radius:2px}
+.ls{color:rgba(212,175,55,.85);font-style:italic}
+.lk{color:#e74c3c;font-weight:700}
+.li{color:rgba(52,152,219,.9)}
+/* TARGET LIST */
+.tlist{width:100%;display:flex;flex-direction:column;gap:6px}
+.ti{display:flex;align-items:center;gap:10px;padding:13px 14px;min-height:52px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .15s}
+.ti:active{background:rgba(212,175,55,.08)}
+.ti.tsel{border-color:var(--gold);background:rgba(212,175,55,.08)}
+/* HONOR BARS */
+.hbar{display:flex;align-items:center;gap:10px;padding:10px 12px;
+  background:rgba(212,175,55,.04);border:1px solid rgba(212,175,55,.09);border-radius:8px;margin-bottom:6px}
+.hbar-name{font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar-track{width:90px;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;flex-shrink:0}
+.hbar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.hbar-score{font-family:'Cinzel Decorative';font-size:13px;color:var(--gold);width:28px;text-align:right;flex-shrink:0}
+/* NOTIF */
+.notif{position:fixed;top:calc(16px + var(--safe-t));left:50%;
+  transform:translateX(-50%) translateY(-120px);
+  background:rgba(7,7,13,.97);border:1px solid var(--gold);
+  padding:12px 22px;border-radius:10px;z-index:999;
+  font-family:'Cinzel Decorative';font-size:11px;letter-spacing:2px;color:var(--gold);
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 10px 40px rgba(0,0,0,.6);max-width:88vw;text-align:center;
+  pointer-events:none}
+.notif.show{transform:translateX(-50%) translateY(0)}
+/* SPINNER */
+.spin{animation:sp 1.1s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* SMALL TEXT */
+.sm{font-size:11px;color:rgba(242,237,227,.28);text-align:center;letter-spacing:.8px}
+/* ROLE REVEAL OVERLAY */
+.overlay{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;
+  align-items:center;justify-content:center;padding:20px;
+  background:rgba(7,7,13,.97);overflow-y:auto}
+.overlay.show{display:flex}
+/* WIN */
+.win-h{font-family:'Cinzel Decorative';font-size:clamp(20px,7vw,34px);text-align:center;
+  margin:12px 0;letter-spacing:2px}
+/* SETUP STEPS */
+.step{display:flex;gap:12px;align-items:flex-start;padding:12px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px}
+.step-num{font-family:'Cinzel Decorative';font-size:18px;color:var(--gold);
+  width:32px;text-align:center;flex-shrink:0;margin-top:2px}
+.step-text{font-size:13px;line-height:1.6;color:rgba(242,237,227,.72)}
+/* PRIVATE POPUP */
+.popup{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;
+  align-items:center;justify-content:center;padding:20px;
+  background:rgba(7,7,13,.98)}
+.popup.show{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.popup-inner{animation:fadeIn .3s ease both;width:100%;max-width:400px}
+/* BOTTOM FIXED ACTION */
+.bottom-action{position:fixed;bottom:0;left:0;right:0;
+  padding:12px 16px calc(12px + var(--safe-b));
+  background:linear-gradient(to top,rgba(7,7,13,.98) 70%,transparent);
+  z-index:20}
+/* PETAL */
+.petal{position:fixed;top:-20px;pointer-events:none;z-index:1;animation:pf linear infinite;opacity:.28}
+@keyframes pf{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<!-- PETALS -->
+<div id="petals-wrap"></div>
+<!-- NOTIF -->
+<div class="notif" id="notif"></div>
+
+<!-- ████ SETUP SCREEN ████ -->
+<div class="screen active" id="s-setup">
+<div class="page">
+  <div style="margin:8px 0 4px"><div class="kanji">忍</div>
+  <div class="gtitle">NIGHT OF THE NINJA</div>
+  <div class="gsub">Configurare o singură dată</div></div>
+  <div class="card">
+    <div class="ct">🔥 Conectare Firebase Gratuită</div>
+    <p style="font-size:13px;line-height:1.7;color:rgba(242,237,227,.65);margin-bottom:14px">
+      Firebase este un serviciu Google <b style="color:var(--gold)">100% gratuit</b> care permite sincronizarea în timp real între telefoane. Configurezi o singură dată, durează ~3 minute.
+    </p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      <div class="step"><div class="step-num">1</div><div class="step-text">Deschide pe un alt tab: <b style="color:var(--gold)">console.firebase.google.com</b> → Intră cu contul Google → <b>Add project</b> → Dă un nume (ex: ninja) → Continue → Continue → Create</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text">Din meniu stânga → <b>Build</b> → <b>Realtime Database</b> → <b>Create Database</b> → alege orice locație → <b>Start in test mode</b> → Enable</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text">Copiază URL-ul care apare (arată ca: <b style="color:var(--gold)">https://ninja-xxxxx-default-rtdb.firebaseio.com</b>)</div></div>
+    </div>
+    <div class="lbl">URL-ul bazei tale Firebase</div>
+    <input id="fb-url" type="url" placeholder="https://proiect-xxxx-rtdb.firebaseio.com" autocomplete="off" autocorrect="off" autocapitalize="off">
+    <button class="btn btn-gold" onclick="saveFirebase()">✓ Salvează și Continuă</button>
+    <div class="div" style="margin:12px 0"></div>
+    <p class="sm">URL-ul se salvează pe telefon. Nu trebuie introdus din nou.</p>
+  </div>
+</div>
+</div>
+
+<!-- ████ HOME SCREEN ████ -->
+<div class="screen" id="s-home">
+<div class="page">
+  <div style="margin:8px 0 4px"><div class="kanji">忍</div>
+  <div class="gtitle">NIGHT OF THE NINJA</div>
+  <div class="gsub">4–11 jucători · La masă</div></div>
+  <div class="card">
+    <div class="ct">⚔ Intră în Joc</div>
+    <div class="lbl">Numele Tău</div>
+    <input id="iname" type="text" placeholder="Alias ninja..." maxlength="16" autocomplete="off">
+    <button class="btn btn-red" onclick="doCreate()" style="margin-bottom:8px">🏯 Creează Cameră Nouă</button>
+    <div class="div" style="margin:8px 0"></div>
+    <div class="lbl">Cod Cameră</div>
+    <input id="icode" type="text" placeholder="XXXX" maxlength="4" style="text-transform:uppercase;text-align:center;font-size:28px;letter-spacing:12px;font-family:'Cinzel Decorative'" autocomplete="off">
+    <button class="btn btn-blue" onclick="doJoin()">🥷 Intră în Cameră</button>
+    <div class="div" style="margin:10px 0"></div>
+    <div class="row">
+      <button class="btn btn-ghost btn-sm" onclick="go('s-rules')">📜 Reguli</button>
+      <button class="btn btn-ghost btn-sm" onclick="resetFirebase()">⚙ Firebase</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ████ RULES SCREEN ████ -->
+<div class="screen" id="s-rules">
+<div class="page">
+  <div style="margin:8px 0 4px"><div class="kanji" style="font-size:40px">忍</div>
+  <div class="gtitle" style="font-size:15px">REGULILE JOCULUI</div></div>
+  <div class="card">
+    <div class="ct">📜 Night of the Ninja</div>
+    <div style="font-size:12.5px;line-height:1.85;color:rgba(242,237,227,.72)">
+      <p style="margin-bottom:10px"><b style="color:var(--gold)">SCOP:</b> Casa Crane 🔴 vs Casa Lotus 🔵 se luptă pentru Onoare. <b style="color:var(--gold)">Primul cu 10+ puncte câștigă!</b></p>
+      <p style="color:var(--gold);font-family:'Cinzel Decorative';font-size:9.5px;letter-spacing:2px;margin-bottom:7px">🏠 CASE ȘI RANGURI</p>
+      <p style="margin-bottom:10px">Fiecare jucător primește o Casă secretă (Crane/Lotus + rang 1–5). <b>Rang 1 = cel mai valoros.</b> Supraviețuitorul cu rangul cel mai mic decide câștigătoarea rundei. Număr impar → un jucător devine <b style="color:var(--ronin)">Ronin</b> (loner).</p>
+      <p style="color:var(--gold);font-family:'Cinzel Decorative';font-size:9.5px;letter-spacing:2px;margin-bottom:7px">🃏 NINJA DRAFT</p>
+      <p style="margin-bottom:10px">Primești 3 cărți Ninja. Alegi 1, pasezi 2 stânga. Primești 2 dreapta, alegi 1, arunci ultima. Rezultat: <b>2 cărți Ninja</b> pe rundă.</p>
+      <p style="color:var(--gold);font-family:'Cinzel Decorative';font-size:9.5px;letter-spacing:2px;margin-bottom:7px">🌙 FAZELE NOPȚII (în ordine)</p>
+      <p style="margin-bottom:4px"><b style="color:#1e8449">🕵️ Spy:</b> Privești Casa unui jucător.</p>
+      <p style="margin-bottom:4px"><b style="color:#9b59b6">🔮 Mystic:</b> Privești Casa ȘI o Carte Ninja.</p>
+      <p style="margin-bottom:4px"><b style="color:var(--gold)">🃏 Trickster:</b> Abilități speciale (schimbi case, blochezi, etc.)</p>
+      <p style="margin-bottom:4px"><b style="color:var(--crane)">🗡️ Blind Assassin:</b> Omori fără a vedea casa!</p>
+      <p style="margin-bottom:10px"><b style="color:#e74c3c">⚔️ Shinobi:</b> Vezi casa, apoi decizi dacă omori.</p>
+      <p style="color:var(--gold);font-family:'Cinzel Decorative';font-size:9.5px;letter-spacing:2px;margin-bottom:7px">🌟 SPECIALE</p>
+      <p style="margin-bottom:4px"><b style="color:#3498db">🪞 Mirror Monk:</b> Reacție — reflectă atacul înapoi!</p>
+      <p style="margin-bottom:4px"><b style="color:#f1c40f">💀 Martyr:</b> Reacție — dacă mori, omori și tu pe cineva.</p>
+      <p style="margin-bottom:10px"><b style="color:var(--gold)">👑 Mastermind:</b> Dacă supraviețuiești, casa ta câștigă!</p>
+      <p style="color:var(--gold);font-family:'Cinzel Decorative';font-size:9.5px;letter-spacing:2px;margin-bottom:7px">🏆 ONOARE</p>
+      <p>La final de rundă, casa câștigătoare (toți membrii, vii sau morți) primesc un token de Onoare (2–4 pct). Primul la <b style="color:var(--gold)">10 puncte</b> câștigă!</p>
+    </div>
+  </div>
+  <button class="btn btn-ghost btn-sm" onclick="go('s-home')">← Înapoi</button>
+</div>
+</div>
+
+<!-- ████ LOBBY SCREEN ████ -->
+<div class="screen" id="s-lobby">
+<div class="page">
+  <div style="margin:8px 0 4px">
+    <div class="kanji" style="font-size:40px">忍</div>
+    <div class="gtitle" style="font-size:14px">SALA DE AȘTEPTARE</div>
+  </div>
+  <div class="card">
+    <div class="ct">🏯 Cod Cameră — Click pentru copiere</div>
+    <div class="rcode" id="lcode" onclick="cpCode()">????</div>
+    <p class="sm" style="margin-top:6px">Arată codul prietenilor să se alăture 👆</p>
+  </div>
+  <div class="card">
+    <div class="ct">👥 Jucători (<span id="lcnt">0</span>/11)</div>
+    <div class="plist" id="lplayers"></div>
+  </div>
+  <div id="host-area" style="width:100%;display:none">
+    <button class="btn btn-red" id="sbtn" onclick="hostStart()" disabled>⚔ Începe Jocul</button>
+    <p class="sm" style="margin-top:6px">Minim 4 jucători necesari</p>
+  </div>
+  <div id="guest-area" style="width:100%;display:none">
+    <div class="card" style="text-align:center;padding:20px">
+      <div class="spin" style="font-size:28px">⚔</div>
+      <p style="margin-top:10px;font-size:12px;letter-spacing:2px;color:rgba(242,237,227,.38)">Așteptând gazda...</p>
+    </div>
+  </div>
+  <button class="btn btn-ghost btn-sm" onclick="doLeave()">← Ieșire</button>
+</div>
+</div>
+
+<!-- ████ ROLE REVEAL OVERLAY (private) ████ -->
+<div class="overlay" id="o-role">
+<div style="width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center;gap:14px">
+  <div class="kanji" style="font-size:44px">忍</div>
+  <div class="gtitle" style="font-size:13px">ROLUL TĂU SECRET</div>
+  <p style="font-size:11px;color:rgba(242,237,227,.35);letter-spacing:2px;text-align:center">NU arăta altora ecranul!</p>
+  <div id="role-house-box" class="hbox" style="width:100%"></div>
+  <div class="card" style="width:100%;text-align:center">
+    <div class="ct" id="role-card-title">Cărțile Tale Ninja</div>
+    <div id="role-cards" class="ncgrid"></div>
+  </div>
+  <div id="role-allies" style="display:none;width:100%">
+    <div class="card">
+      <div class="ct" style="color:var(--crane)">🥷 Aliații Tăi (secret!)</div>
+      <div id="allies-list" class="plist"></div>
+    </div>
+  </div>
+  <button class="btn btn-gold" onclick="confirmRole()" style="width:100%">✓ Am Văzut — Ascunde</button>
+</div>
+</div>
+
+<!-- ████ DRAFT SCREEN ████ -->
+<div class="screen" id="s-draft">
+<div class="page">
+  <div class="pbanner" id="draft-banner">🃏 NINJA DRAFT — Runda 1</div>
+  <div id="draft-house-box" class="hbox" style="width:100%"></div>
+  <p style="font-size:12px;color:rgba(242,237,227,.45);text-align:center;letter-spacing:.8px" id="draft-hint"></p>
+  <div id="draft-cards" class="ncgrid"></div>
+  <div style="height:70px"></div><!-- bottom action space -->
+</div>
+<div class="bottom-action">
+  <button class="btn btn-gold" id="draft-btn" onclick="confirmDraft()" disabled>✓ Confirmă Alegerea</button>
+</div>
+</div>
+
+<!-- ████ NIGHT SCREEN ████ -->
+<div class="screen" id="s-night">
+<div class="page">
+  <div class="pbanner" id="night-banner">🌙 Faza Nopții</div>
+  <div id="night-players" class="plist" style="width:100%"></div>
+  <div class="card" style="width:100%">
+    <div class="ct" id="act-title">Acțiunea Ta</div>
+    <div id="act-body"></div>
+  </div>
+  <div class="card" style="width:100%">
+    <div class="ct">📜 Jurnal</div>
+    <div class="glog" id="glog"></div>
+  </div>
+  <div style="height:10px"></div>
+</div>
+</div>
+
+<!-- ████ REVEAL SCREEN ████ -->
+<div class="screen" id="s-reveal">
+<div class="page">
+  <div class="kanji" style="font-size:40px;margin-top:8px">忍</div>
+  <div class="gtitle" style="font-size:14px">DEZVĂLUIREA CASELOR</div>
+  <div class="card" style="width:100%">
+    <div class="ct" id="rev-title">Rezultatele Rundei</div>
+    <div id="rev-players" class="plist"></div>
+  </div>
+  <div class="card" style="width:100%">
+    <div class="ct">📊 Scoruri (Obiectiv: 10 pct ⭐)</div>
+    <div id="rev-scores"></div>
+  </div>
+  <div id="host-rev-btn" style="width:100%;display:none">
+    <button class="btn btn-red" id="rev-next" onclick="hostNextOrWin()">⚔ Următoarea Rundă</button>
+  </div>
+  <div id="guest-rev-wait" style="display:none">
+    <div class="card" style="text-align:center;padding:16px">
+      <div class="spin">⚔</div>
+      <p style="margin-top:8px;font-size:11px;letter-spacing:2px;color:rgba(242,237,227,.35)">Așteptând gazda...</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ████ WIN SCREEN ████ -->
+<div class="screen" id="s-win">
+<div class="page">
+  <div class="kanji" style="color:var(--gold);margin-top:8px">忍</div>
+  <div class="win-h" id="win-title"></div>
+  <div id="win-icon" style="font-size:80px;text-align:center"></div>
+  <div class="card" style="width:100%">
+    <div class="ct">🏆 Clasament Final</div>
+    <div id="win-scores"></div>
+  </div>
+  <div id="win-msg" style="font-size:14px;color:rgba(242,237,227,.6);text-align:center;line-height:1.7"></div>
+  <button class="btn btn-red" onclick="doPlayAgain()" style="width:100%">⚔ Joacă Din Nou</button>
+  <button class="btn btn-ghost btn-sm" onclick="doLeave()" style="width:100%">🏡 Ieșire</button>
+</div>
+</div>
+
+<!-- PRIVATE INFO POPUP -->
+<div class="popup" id="popup-priv">
+<div class="popup-inner">
+  <div class="card" style="text-align:center">
+    <div style="font-size:48px;margin-bottom:12px" id="popup-icon"></div>
+    <div class="ct" id="popup-title">Informație Secretă</div>
+    <div id="popup-body" style="font-size:15px;line-height:1.7;color:rgba(242,237,227,.8);margin-bottom:16px"></div>
+    <button class="btn btn-ghost" onclick="closePopup()">✓ Am Văzut</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//   NIGHT OF THE NINJA — Mobile Full Game Engine v3
+//   Firebase Realtime Database REST API (no SDK)
+//   Real multiplayer via polling every 1.3s
+// ═══════════════════════════════════════════════════════
+
+// ── PETALS ──
+(()=>{
+  const em=['🌸','✦','🌙','⭐','✧','·'];
+  const w=document.getElementById('petals-wrap');
+  for(let i=0;i<12;i++){
+    const s=document.createElement('div');s.className='petal';
+    s.textContent=em[i%em.length];
+    s.style.cssText=`left:${Math.random()*100}vw;font-size:${8+Math.random()*10}px;animation-duration:${10+Math.random()*14}s;animation-delay:${-Math.random()*22}s`;
+    w.appendChild(s);
+  }
+})();
+
+// ── FIREBASE REST — uses direct sub-path writes for nested keys ──
+let FB_URL='';
+const fbGet=path=>fetch(`${FB_URL}/${path}.json`).then(r=>r.json()).catch(()=>null);
+const fbSet=(path,data)=>fetch(`${FB_URL}/${path}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json()).catch(()=>null);
+const fbPatch=(path,data)=>fetch(`${FB_URL}/${path}.json`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json()).catch(()=>null);
+// Bump timestamp on state after any write
+const fbTs=()=>fbSet(`rooms/${G.roomCode}/state/ts`,Date.now());
+
+// ── ALL NINJA CARDS ──
+const CARDS=[
+  {id:'spy1',type:'spy',rank:1,name:'Spy',icon:'🕵️',desc:'Privești Casa unui jucător ales.'},
+  {id:'spy2',type:'spy',rank:2,name:'Spy',icon:'🕵️',desc:'Privești Casa unui jucător ales.'},
+  {id:'spy3',type:'spy',rank:3,name:'Spy',icon:'🕵️',desc:'Privești Casa unui jucător ales.'},
+  {id:'mys1',type:'mystic',rank:1,name:'Mystic',icon:'🔮',desc:'Privești Casa ȘI o Carte Ninja.'},
+  {id:'mys2',type:'mystic',rank:2,name:'Mystic',icon:'🔮',desc:'Privești Casa ȘI o Carte Ninja.'},
+  {id:'mys3',type:'mystic',rank:3,name:'Mystic',icon:'🔮',desc:'Privești Casa ȘI o Carte Ninja.'},
+  {id:'tri1',type:'trickster',rank:1,name:'Shapeshifter',icon:'🦊',desc:'Schimbi casele a 2 jucători secret!'},
+  {id:'tri2',type:'trickster',rank:2,name:'Ghost',icon:'👻',desc:'Privești casa unui jucător mort.'},
+  {id:'tri3',type:'trickster',rank:3,name:'Puppeteer',icon:'🎭',desc:'Forțezi un jucător să-și dezvăluie Casa.'},
+  {id:'tri4',type:'trickster',rank:4,name:'Shadow',icon:'🌑',desc:'Blochezi un jucător — nu poate acționa.'},
+  {id:'tri5',type:'trickster',rank:5,name:'Whisper',icon:'💬',desc:'Trimiți un mesaj secret unui jucător.'},
+  {id:'tri6',type:'trickster',rank:6,name:'Decoy',icon:'🪆',desc:'Schimbi casa ta cu a unui jucător ales.'},
+  {id:'ba1',type:'blind_assassin',rank:1,name:'Blind Assassin',icon:'🗡️',desc:'Omori fără a vedea casa! Risc total.'},
+  {id:'ba2',type:'blind_assassin',rank:2,name:'Blind Assassin',icon:'🗡️',desc:'Omori fără a vedea casa! Risc total.'},
+  {id:'ba3',type:'blind_assassin',rank:3,name:'Blind Assassin',icon:'🗡️',desc:'Omori fără a vedea casa! Risc total.'},
+  {id:'shi1',type:'shinobi',rank:1,name:'Shinobi',icon:'⚔️',desc:'Privești casa, APOI decizi dacă omori.'},
+  {id:'shi2',type:'shinobi',rank:2,name:'Shinobi',icon:'⚔️',desc:'Privești casa, APOI decizi dacă omori.'},
+  {id:'shi3',type:'shinobi',rank:3,name:'Shinobi',icon:'⚔️',desc:'Privești casa, APOI decizi dacă omori.'},
+  {id:'mastermind',type:'mastermind',rank:'★',name:'Mastermind',icon:'👑',desc:'SPECIAL: Dacă supraviețuiești, casa ta câștigă!'},
+  {id:'mirror',type:'mirror_monk',rank:'⟲',name:'Mirror Monk',icon:'🪞',desc:'REACȚIE: Dacă ești atacat, atacul se întoarce!'},
+  {id:'martyr',type:'martyr',rank:'✝',name:'Martyr',icon:'💀',desc:'REACȚIE: Dacă mori, omori și tu pe cineva.'},
+];
+
+const HOUSES={
+  4:[{h:'crane',r:1},{h:'crane',r:2},{h:'lotus',r:1},{h:'lotus',r:2}],
+  5:[{h:'crane',r:1},{h:'crane',r:2},{h:'lotus',r:1},{h:'lotus',r:2},{h:'ronin',r:0}],
+  6:[{h:'crane',r:1},{h:'crane',r:2},{h:'crane',r:3},{h:'lotus',r:1},{h:'lotus',r:2},{h:'lotus',r:3}],
+  7:[{h:'crane',r:1},{h:'crane',r:2},{h:'crane',r:3},{h:'lotus',r:1},{h:'lotus',r:2},{h:'lotus',r:3},{h:'ronin',r:0}],
+  8:[{h:'crane',r:1},{h:'crane',r:2},{h:'crane',r:3},{h:'crane',r:4},{h:'lotus',r:1},{h:'lotus',r:2},{h:'lotus',r:3},{h:'lotus',r:4}],
+  9:[{h:'crane',r:1},{h:'crane',r:2},{h:'crane',r:3},{h:'crane',r:4},{h:'lotus',r:1},{h:'lotus',r:2},{h:'lotus',r:3},{h:'lotus',r:4},{h:'ronin',r:0}],
+  10:[{h:'crane',r:1},{h:'crane',r:2},{h:'crane',r:3},{h:'crane',r:4},{h:'crane',r:5},{h:'lotus',r:1},{h:'lotus',r:2},{h:'lotus',r:3},{h:'lotus',r:4},{h:'lotus',r:5}],
+  11:[{h:'crane',r:1},{h:'crane',r:2},{h:'crane',r:3},{h:'crane',r:4},{h:'crane',r:5},{h:'lotus',r:1},{h:'lotus',r:2},{h:'lotus',r:3},{h:'lotus',r:4},{h:'lotus',r:5},{h:'ronin',r:0}],
+};
+const AVATARS=['🥷','⚔️','🗡️','🛡️','🏹','🔮','💎','🌙','🦊','🐉','🌸'];
+const PHASE_ORDER=['spy','mystic','trickster','blind_assassin','shinobi'];
+
+// ── GAME STATE ──
+const G={
+  myId:'p'+Math.random().toString(36).substr(2,8),
+  myName:'',roomCode:'',isHost:false,
+  players:[],honor:{},honorBag:[],round:0,
+  phase:'lobby',nightPhase:'',
+  myHand:[],myDraftHand:[],myDraftPick:null,draftRound:1,
+  log:[],pollTimer:null,lastTs:0,lastPrivTs:0,
+  selectedTarget:null,roleShown:false,
+  processingPhase:false,
+};
+
+// ── UTILS ──
+const sh=a=>{for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const gc=id=>CARDS.find(c=>c.id===id);
+const gp=id=>G.players.find(p=>p.id===id);
+const me=()=>gp(G.myId);
+const hl=h=>({crane:'🔴 Casa Crane',lotus:'🔵 Casa Lotus',ronin:'🟣 Ronin'}[h]||h||'?');
+const hc=h=>({crane:'var(--crane)',lotus:'var(--lotus)',ronin:'var(--ronin)'}[h]||'#fff');
+const mkBag=()=>sh([2,2,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,4,4,2,3,4,2,3,4,2,3,4,2,3,4,2,3,4]);
+const mkCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<4;i++)s+=c[0|Math.random()*c.length];return s;};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+// ── SCREEN ──
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.overlay').forEach(s=>s.classList.remove('show'));
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(el.classList.contains('overlay'))el.classList.add('show');
+  else el.classList.add('active');
+}
+
+// ── NOTIFY ──
+let nT=null;
+function notify(msg,dur=3000){
+  const n=document.getElementById('notif');
+  n.textContent=msg;n.classList.add('show');
+  clearTimeout(nT);nT=setTimeout(()=>n.classList.remove('show'),dur);
+}
+
+// ── LOG ──
+function alog(cls,msg){G.log.push({cls,msg});rlog();}
+function rlog(){const el=document.getElementById('glog');if(!el)return;el.innerHTML=G.log.slice(-50).map(e=>`<div class="${e.cls}">${e.msg}</div>`).join('');el.scrollTop=el.scrollHeight;}
+
+// ── POPUP (private info) ──
+function showPopup(icon,title,body){
+  document.getElementById('popup-icon').textContent=icon;
+  document.getElementById('popup-title').textContent=title;
+  document.getElementById('popup-body').innerHTML=body;
+  document.getElementById('popup-priv').classList.add('show');
+}
+function closePopup(){document.getElementById('popup-priv').classList.remove('show');}
+
+// ── FIREBASE SETUP ──
+function saveFirebase(){
+  let url=(document.getElementById('fb-url').value||'').trim().replace(/\/+$/,'');
+  if(!url.startsWith('https://')){notify('⚠ URL invalid! Trebuie https://...');return;}
+  FB_URL=url;localStorage.setItem('notn_fb',url);go('s-home');notify('✅ Firebase conectat!');
+}
+function resetFirebase(){localStorage.removeItem('notn_fb');FB_URL='';go('s-setup');}
+(function init(){const s=localStorage.getItem('notn_fb');if(s){FB_URL=s;go('s-home');}else go('s-setup');})();
+
+// ── POLLING ──
+function startPoll(code){
+  stopPoll();
+  G.pollTimer=setInterval(()=>poll(code),1300);
+}
+function stopPoll(){if(G.pollTimer){clearInterval(G.pollTimer);G.pollTimer=null;}}
+
+async function poll(code){
+  try{
+    const ts=await fbGet(`rooms/${code}/state/ts`);
+    if(!ts||ts<=G.lastTs)return;
+    G.lastTs=ts;
+    const st=await fbGet(`rooms/${code}/state`);
+    if(st)await processState(st);
+  }catch(e){}
+}
+
+// ── MAIN STATE PROCESSOR ──
+async function processState(st){
+  if(!st||!st.phase)return;
+
+  // Always sync players & honor
+  if(st.players)G.players=st.players;
+  if(st.honor)G.honor=st.honor;
+  if(st.round)G.round=st.round;
+  if(st.honorBag)G.honorBag=st.honorBag;
+
+  // Private message
+  if(st.private&&st.private[G.myId]){
+    const priv=st.private[G.myId];
+    if(priv&&priv.ts&&priv.ts>G.lastPrivTs){
+      G.lastPrivTs=priv.ts;
+      showPopup(priv.icon||'🔍','Informație Secretă',priv.msg||'');
+    }
+  }
+
+  const prev=G.phase;
+  G.phase=st.phase;
+
+  // ── LOBBY ──
+  if(st.phase==='lobby'){
+    if(document.getElementById('s-lobby').classList.contains('active'))renderLobby();
+    if(G.isHost)renderLobby();
+    G.roleShown=false;
+    return;
+  }
+
+  // ── DRAFT ROUND 1 ──
+  if(st.phase==='draft'){
+    if(prev!=='draft'){
+      G.log=[];G.roleShown=false;
+      alog('ls',`🌙 Runda ${st.round} începe!`);
+      if(!G.isHost){
+        // Apply my house
+        if(st.houses&&st.houses[G.myId]){
+          const mp=me();if(mp){mp.house=st.houses[G.myId].h;mp.rank=st.houses[G.myId].r;}
+        }
+        // Apply my draft hand
+        if(st.draftHands&&st.draftHands[G.myId])G.myDraftHand=[...st.draftHands[G.myId]];
+        G.draftRound=1;G.myDraftPick=null;
+        renderDraftScreen();go('s-draft');
+      }
+    }
+    // Host checks if all picks are in
+    if(G.isHost&&!G.processingPhase){
+      const picks=st.draftPicks1||{};
+      const passes=st.draftPass1||{};
+      if(Object.keys(picks).length>=G.players.length&&Object.keys(passes).length>=G.players.length){
+        G.processingPhase=true;
+        await hostDistributeDraftR2(picks,passes);
+        G.processingPhase=false;
+      }
+    }
+    return;
+  }
+
+  // ── DRAFT ROUND 2 ──
+  if(st.phase==='draft2'){
+    if(prev!=='draft2'&&!G.isHost){
+      if(st.draft2Hands&&st.draft2Hands[G.myId]){
+        G.myDraftHand=[...st.draft2Hands[G.myId]];
+        G.draftRound=2;G.myDraftPick=null;
+        renderDraftScreen();
+        notify('✦ Pasul 2 — mai alege o carte!');
+      }
+    }
+    // Host checks if all final picks are in
+    if(G.isHost&&!G.processingPhase){
+      const picks2=st.draftPicks2||{};
+      if(Object.keys(picks2).length>=G.players.length){
+        G.processingPhase=true;
+        await hostAssembleHandsAndStartNight(st.draftPicks1||{},picks2);
+        G.processingPhase=false;
+      }
+    }
+    return;
+  }
+
+  // ── NIGHT ──
+  if(st.phase==='night'){
+    // Sync night phase
+    const prevNightPh=G.nightPhase;
+    G.nightPhase=st.nightPhase||'spy';
+
+    if(prev!=='night'){
+      // First time entering night
+      if(!G.isHost){
+        if(st.hands&&st.hands[G.myId]){const mp=me();if(mp)mp.hand=st.hands[G.myId]||[];}
+        G.myHand=(me()||{}).hand||[];
+        alog('ls','🌙 Noaptea a căzut!');
+        go('s-night');renderNightPlayerList();
+      }
+      // Show role reveal overlay
+      if(!G.roleShown){G.roleShown=true;setTimeout(showRoleReveal,400);}
+    }
+
+    if(G.nightPhase!==prevNightPh||prev!=='night'){
+      if(!G.isHost)alog('ls','▶ '+phLbl(G.nightPhase));
+      renderNightBanner();
+      renderNightPlayerList();
+      // Update kills
+      if(st.kills)Object.keys(st.kills).forEach(vid=>{const p=gp(vid);if(p&&p.alive){p.alive=false;if(!G.isHost)alog('lk',`⚰ ${p.name} a fost eliminat!`);}});
+      await showNightAction(st);
+    }
+
+    // Host: handle shinobi peek requests
+    if(G.isHost&&st.shinobiPeek){
+      const resps=st.shinobiResp||{};let changed=false;
+      for(const[aid,tid] of Object.entries(st.shinobiPeek)){
+        if(!resps[aid]){const t=gp(tid);if(t){resps[aid]={house:t.house,rank:t.rank};changed=true;}}
+      }
+      if(changed){await fbSet(`rooms/${G.roomCode}/state/shinobiResp`,resps);await fbTs();}
+    }
+
+    // Host: check if current phase is complete
+    if(G.isHost&&!G.processingPhase&&G.nightPhase!=='done'){
+      const actions=(st.actions&&st.actions[G.nightPhase])||{};
+      // Count players who need to act (alive)
+      const needCount=G.players.filter(p=>p.alive).length;
+      if(Object.keys(actions).length>=needCount){
+        G.processingPhase=true;
+        await hostResolveNightPhase(G.nightPhase,actions,st);
+        G.processingPhase=false;
+      }
+    }
+
+    if(G.isHost&&G.nightPhase==='done'&&!G.processingPhase){
+      G.processingPhase=true;
+      await hostResolveNightEnd(st);
+      G.processingPhase=false;
+    }
+    return;
+  }
+
+  // ── REVEAL ──
+  if(st.phase==='reveal'&&prev!=='reveal'){
+    showReveal(st.winHouse,st.tokens);
+    return;
+  }
+
+  // ── WIN ──
+  if(st.phase==='win'&&prev!=='win'){
+    showWin(st.winnerId);
+    return;
+  }
+}
+
+// ── HOME ──
+function doCreate(){
+  const n=(document.getElementById('iname').value||'').trim();
+  if(!n){notify('⚠ Introdu un nume!');return;}
+  G.myName=n;G.isHost=true;G.roomCode=mkCode();
+  G.players=[{id:G.myId,name:n,avatar:AVATARS[0],alive:true,honor:0,hand:[]}];
+  G.honor[G.myId]=0;
+  fbSet(`rooms/${G.roomCode}/state`,{phase:'lobby',round:0,players:G.players,honor:G.honor,ts:Date.now()});
+  document.getElementById('lcode').textContent=G.roomCode;
+  renderLobby();startPoll(G.roomCode);go('s-lobby');
+}
+
+async function doJoin(){
+  const n=(document.getElementById('iname').value||'').trim();
+  const code=(document.getElementById('icode').value||'').trim().toUpperCase();
+  if(!n){notify('⚠ Introdu un nume!');return;}
+  if(code.length!==4){notify('⚠ Cod de 4 litere!');return;}
+  G.myName=n;G.isHost=false;G.roomCode=code;
+  const st=await fbGet(`rooms/${code}/state`);
+  if(!st||st.phase!=='lobby'){notify('⚠ Camera nu există sau jocul a început!');return;}
+  G.players=st.players||[];G.honor=st.honor||{};
+  if(G.players.find(p=>p.id===G.myId)){notify('⚠ Ești deja în cameră!');return;}
+  G.players.push({id:G.myId,name:n,avatar:AVATARS[G.players.length%AVATARS.length],alive:true,honor:0,hand:[]});
+  G.honor[G.myId]=0;
+  await fbPatch(`rooms/${code}/state`,{players:G.players,honor:G.honor,ts:Date.now()});
+  document.getElementById('lcode').textContent=code;
+  renderLobby();startPoll(code);go('s-lobby');notify('✅ Te-ai alăturat!');
+}
+
+function doLeave(){
+  stopPoll();
+  Object.assign(G,{roomCode:'',isHost:false,players:[],honor:{},honorBag:[],round:0,phase:'lobby',myHand:[],log:[],lastTs:0,lastPrivTs:0,draftRound:1,myDraftPick:null,nightPhase:'',roleShown:false,processingPhase:false});
+  go('s-home');
+}
+
+function doPlayAgain(){
+  if(!G.isHost){notify('Așteptați gazda...');return;}
+  G.log=[];G.players.forEach(p=>{p.alive=true;p.hand=[];});
+  fbSet(`rooms/${G.roomCode}/state`,{phase:'lobby',round:0,players:G.players,honor:G.honor,ts:Date.now()});
+  renderLobby();go('s-lobby');
+}
+
+function cpCode(){navigator.clipboard.writeText(G.roomCode).then(()=>notify('📋 Copiat: '+G.roomCode)).catch(()=>notify('Cod: '+G.roomCode));}
+
+// ── LOBBY ──
+function renderLobby(){
+  document.getElementById('lcnt').textContent=G.players.length;
+  document.getElementById('lplayers').innerHTML=G.players.map((p,i)=>`
+    <div class="pi ${p.id===G.myId?'me':''}">
+      <div class="av">${p.avatar}</div>
+      <div class="pname">${p.name}${i===0?' <span style="font-size:9px;opacity:.4">GAZDĂ</span>':''}</div>
+      ${(G.honor[p.id]||0)>0?`<span class="hbadge">${G.honor[p.id]}⭐</span>`:'<div class="dot dot-g"></div>'}
+    </div>`).join('');
+  document.getElementById('host-area').style.display=G.isHost?'block':'none';
+  document.getElementById('guest-area').style.display=G.isHost?'none':'block';
+  if(G.isHost)document.getElementById('sbtn').disabled=G.players.length<4;
+}
+
+// ── START GAME / ROUND ──
+async function hostStart(){
+  if(G.players.length<4){notify('⚠ Minim 4 jucători!');return;}
+  G.honorBag=mkBag();
+  G.players.forEach(p=>{if(!G.honor[p.id])G.honor[p.id]=0;});
+  G.round=0;await hostStartRound();
+}
+
+async function hostStartRound(){
+  G.round++;
+  G.players.forEach(p=>{p.alive=true;p.hand=[];});
+  G.log=[];G.roleShown=false;G.processingPhase=false;
+  alog('ls',`🌙 Runda ${G.round} începe!`);
+
+  const n=G.players.length;
+  const setup=sh([...(HOUSES[Math.min(n,11)]||HOUSES[11])]);
+  const houses={};
+  G.players.forEach((p,i)=>{p.house=setup[i].h;p.rank=setup[i].r;houses[p.id]={h:p.house,r:p.rank};});
+
+  const deck=buildDeck(n);sh(deck);
+  const draftHands={};
+  G.players.forEach((p,i)=>{const h=deck.slice(i*3,i*3+3).map(c=>c.id);p.draftHand=h;draftHands[p.id]=h;});
+
+  G.myDraftHand=[...((me()||{}).draftHand||[])];
+  G.draftRound=1;G.myDraftPick=null;
+
+  await fbSet(`rooms/${G.roomCode}/state`,{
+    phase:'draft',round:G.round,
+    players:G.players,honor:G.honor,honorBag:G.honorBag,
+    houses,draftHands,draftPicks1:{},draftPass1:{},draftPicks2:{},
+    actions:{},kills:{},private:{},blockList:[],mastermind:[],
+    ts:Date.now()
+  });
+
+  renderDraftScreen();go('s-draft');
+}
+
+function buildDeck(n){
+  const pool=[
+    ...CARDS.filter(c=>c.type==='spy'),
+    ...CARDS.filter(c=>c.type==='mystic'),
+    ...CARDS.filter(c=>c.type==='trickster'),
+    ...CARDS.filter(c=>c.type==='blind_assassin'),
+    ...CARDS.filter(c=>c.type==='shinobi'),
+    CARDS.find(c=>c.id==='mastermind'),
+    CARDS.find(c=>c.id==='mirror'),
+    CARDS.find(c=>c.id==='martyr'),
+  ].filter(Boolean);
+  sh(pool);return pool.slice(0,n*3);
+}
+
+// ── DRAFT ──
+function renderDraftScreen(){
+  document.getElementById('draft-banner').textContent=`🃏 NINJA DRAFT — Runda ${G.round}, Pasul ${G.draftRound}/2`;
+  const mp=me();const h=(mp&&mp.house)||'crane';
+  const hbox=document.getElementById('draft-house-box');
+  hbox.className=`hbox hbox-${h}`;
+  hbox.innerHTML=`<div class="hbox-title ${h}-text">${hl(h)}</div>
+    <div style="font-size:13px;color:rgba(242,237,227,.5);margin-top:3px">Rang ${mp&&mp.rank||'?'} · Nu arăta altora!</div>`;
+  document.getElementById('draft-hint').textContent=G.draftRound===1?'Alege 1 carte · Pasezi 2 vecinului din stânga':'Alege 1 din 2 · Arunci ultima';
+  G.myDraftPick=null;document.getElementById('draft-btn').disabled=true;
+  document.getElementById('draft-cards').innerHTML=G.myDraftHand.map(cid=>{
+    const c=gc(cid);if(!c)return '';
+    return `<div class="nc nc-${c.type}" id="dc-${c.id}" onclick="pickDraft('${c.id}')">
+      <div class="nc-icon">${c.icon}</div><div class="nc-rank">${c.rank}</div>
+      <div class="nc-name">${c.name}</div><div class="nc-desc">${c.desc}</div>
+    </div>`;}).join('');
+}
+
+function pickDraft(id){
+  G.myDraftPick=id;
+  document.querySelectorAll('#draft-cards .nc').forEach(el=>el.classList.remove('sel'));
+  const el=document.getElementById('dc-'+id);if(el)el.classList.add('sel');
+  document.getElementById('draft-btn').disabled=false;
+}
+
+async function confirmDraft(){
+  if(!G.myDraftPick)return;
+  document.getElementById('draft-btn').disabled=true;
+  if(G.draftRound===1){
+    const pass=G.myDraftHand.filter(id=>id!==G.myDraftPick);
+    // Use direct sub-path writes so we don't overwrite other players' data
+    await fbSet(`rooms/${G.roomCode}/state/draftPicks1/${G.myId}`,G.myDraftPick);
+    await fbSet(`rooms/${G.roomCode}/state/draftPass1/${G.myId}`,pass);
+    await fbTs();
+    const mp=me();if(mp)mp.hand=[G.myDraftPick];
+    document.getElementById('draft-banner').textContent='⏳ Așteptând ceilalți...';
+    document.getElementById('draft-cards').innerHTML='<div style="text-align:center;padding:28px;color:rgba(242,237,227,.3)"><div class="spin" style="font-size:28px">⚔</div><p style="margin-top:14px;font-size:12px;letter-spacing:2px">Așteptând pasul 2...</p></div>';
+    notify('✓ Alegere trimisă!');
+  } else {
+    await fbSet(`rooms/${G.roomCode}/state/draftPicks2/${G.myId}`,G.myDraftPick);
+    await fbTs();
+    const mp=me();if(mp){if(!mp.hand)mp.hand=[];if(!mp.hand.includes(G.myDraftPick))mp.hand.push(G.myDraftPick);}
+    G.myHand=(me()||{}).hand||[];
+    document.getElementById('draft-banner').textContent='✓ Draft complet! Așteptând...';
+    document.getElementById('draft-cards').innerHTML='<div style="text-align:center;padding:24px;color:var(--jade);font-size:14px">✓ Cărțile tale sunt gata!</div>';
+    notify('✓ Draft complet!');
+  }
+}
+
+// HOST: distribute round 2 hands after all round 1 picks
+async function hostDistributeDraftR2(picks1,passes){
+  const draft2Hands={};
+  G.players.forEach(p=>{
+    const myIdx=G.players.findIndex(pl=>pl.id===p.id);
+    const rightIdx=(myIdx+1)%G.players.length;
+    const rightId=G.players[rightIdx].id;
+    draft2Hands[p.id]=passes[rightId]||[];
+  });
+  // Update my hand (host's round 2)
+  G.myDraftHand=[...draft2Hands[G.myId]];
+  G.draftRound=2;G.myDraftPick=null;
+  await fbPatch(`rooms/${G.roomCode}/state`,{phase:'draft2',draft2Hands,ts:Date.now()});
+  renderDraftScreen();
+  notify('✦ Pasul 2 — alege a doua carte!');
+}
+
+// HOST: assemble final hands, start night
+async function hostAssembleHandsAndStartNight(picks1,picks2){
+  const hands={};
+  G.players.forEach(p=>{
+    const h=[];
+    if(picks1[p.id])h.push(picks1[p.id]);
+    if(picks2[p.id])h.push(picks2[p.id]);
+    p.hand=h;hands[p.id]=h;
+  });
+  G.myHand=[...((me()||{}).hand||[])];
+  alog('ls','🌙 Noaptea a căzut!');
+  await fbSet(`rooms/${G.roomCode}/state`,{
+    phase:'night',round:G.round,
+    players:G.players,honor:G.honor,honorBag:G.honorBag,
+    nightPhase:'spy',hands,
+    actions:{},kills:{},private:{},blockList:[],mastermind:[],
+    ts:Date.now()
+  });
+  go('s-night');renderNightPlayerList();
+  if(!G.roleShown){G.roleShown=true;setTimeout(showRoleReveal,400);}
+}
+
+// ── NIGHT UI ──
+const phLbl=ph=>({spy:'🕵️ SPY',mystic:'🔮 MYSTIC',trickster:'🃏 TRICKSTER',blind_assassin:'🗡️ BLIND ASSASSIN',shinobi:'⚔️ SHINOBI',done:'✓ Noapte completă'}[ph]||ph);
+
+function renderNightBanner(){document.getElementById('night-banner').textContent=phLbl(G.nightPhase);}
+
+function renderNightPlayerList(){
+  const el=document.getElementById('night-players');if(!el)return;
+  el.innerHTML=G.players.map(p=>`
+    <div class="pi ${!p.alive?'dead':''} ${p.id===G.myId?'me':''}">
+      <div class="av">${p.avatar}</div>
+      <div class="pname">${p.name}${p.id===G.myId?' (eu)':''}</div>
+      <div class="dot ${p.alive?'dot-g':'dot-r'}"></div>
+    </div>`).join('');
+}
+
+async function showNightAction(st){
+  const ph=G.nightPhase;
+  if(ph==='done'){
+    document.getElementById('act-title').textContent='✓ Noapte completă';
+    document.getElementById('act-body').innerHTML='<p style="color:rgba(242,237,227,.4);text-align:center;padding:18px;font-size:13px">Se pregătește dezvăluirea...</p>';
+    return;
+  }
+  const myP=me();
+  const blockList=(st&&st.blockList)||[];
+  const blocked=blockList.includes(G.myId);
+  const myCards=(G.myHand||[]).map(id=>gc(id)).filter(c=>c&&c.type===ph);
+  const isAlive=myP&&myP.alive!==false;
+  const alreadyActed=st&&st.actions&&st.actions[ph]&&st.actions[ph][G.myId];
+
+  if(alreadyActed){
+    document.getElementById('act-title').textContent=phLbl(ph)+' — Gata';
+    document.getElementById('act-body').innerHTML='<p style="color:var(--jade);text-align:center;padding:18px;font-size:13px">✓ Acțiune trimisă! Așteptând ceilalți...</p>';
+    return;
+  }
+  if(!isAlive){
+    document.getElementById('act-title').textContent='☠ Ești eliminat';
+    document.getElementById('act-body').innerHTML='<p style="color:rgba(242,237,227,.35);text-align:center;padding:16px;font-size:13px">Poți urmări dar nu mai poți acționa.</p>';
+    if(!alreadyActed)await submitAction(ph,null,null,true);return;
+  }
+  if(blocked){
+    document.getElementById('act-title').textContent=phLbl(ph)+' — Blocat!';
+    document.getElementById('act-body').innerHTML='<p style="color:rgba(242,237,227,.38);text-align:center;padding:16px;font-size:13px">🌑 Shadow te-a blocat!</p>';
+    if(!alreadyActed)await submitAction(ph,null,null,true);return;
+  }
+  if(myCards.length===0){
+    document.getElementById('act-title').textContent=phLbl(ph)+' — Fără carte';
+    document.getElementById('act-body').innerHTML='<p style="color:rgba(242,237,227,.35);text-align:center;padding:16px;font-size:13px">Nu ai carte pentru această fază.<br><span style="opacity:.5;font-size:11px">Așteptând ceilalți...</span></p>';
+    if(!alreadyActed)await submitAction(ph,null,null,true);return;
+  }
+
+  const c=myCards[0];
+  document.getElementById('act-title').textContent=`${c.icon} ${c.name} — Acțiunea Ta`;
+  buildActionUI(c,ph);
+}
+
+function buildActionUI(c,ph){
+  const alive=G.players.filter(p=>p.alive&&p.id!==G.myId);
+  const all=G.players.filter(p=>p.id!==G.myId);
+  const pool=c.id==='tri2'?all:alive;
+  G.selectedTarget=null;
+
+  let html=`<p style="font-size:12px;color:rgba(242,237,227,.45);margin-bottom:12px;line-height:1.6">${c.desc}</p>
+    <div class="tlist">${pool.map(p=>`
+      <div class="ti" id="ti-${p.id}" onclick="selTarget('${p.id}','${c.id}','${ph}')">
+        <div class="av" style="font-size:18px;width:28px">${p.avatar}</div>
+        <span>${p.name}</span>${!p.alive?'<span style="margin-left:auto;font-size:11px;opacity:.4">☠</span>':''}
+      </div>`).join('')}
+    </div>
+    <div id="act-confirm" style="display:none;margin-top:12px">
+      <p style="font-size:12px;color:var(--gold);text-align:center;margin-bottom:8px">Ales: <b id="tname-lbl"></b></p>
+      <div id="shinobi-step2" style="display:none">
+        <div id="shinobi-house" style="padding:12px;background:rgba(0,0,0,.3);border-radius:8px;text-align:center;margin-bottom:10px;font-family:'Cinzel Decorative';font-size:15px;letter-spacing:2px;color:var(--gold)">...</div>
+        <div class="row">
+          <button class="btn btn-red btn-sm" onclick="doShinobiKill('${c.id}')">⚔️ Omoară!</button>
+          <button class="btn btn-ghost btn-sm" onclick="doSkip('${c.id}','${ph}')">↩ Retrage</button>
+        </div>
+      </div>
+      <div id="normal-confirm-btn">
+        <button class="btn btn-gold" onclick="doConfirmAction('${c.id}','${ph}')">✓ Confirmă</button>
+      </div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="doSkip('${c.id}','${ph}')" style="margin-top:10px">⟳ Nu juca (blufează)</button>`;
+  document.getElementById('act-body').innerHTML=html;
+}
+
+async function selTarget(tid,cid,ph){
+  G.selectedTarget=tid;
+  document.querySelectorAll('.ti').forEach(el=>el.classList.remove('tsel'));
+  const el=document.getElementById('ti-'+tid);if(el)el.classList.add('tsel');
+  const tp=gp(tid);
+  const nl=document.getElementById('tname-lbl');if(nl)nl.textContent=tp?tp.name:'?';
+  document.getElementById('act-confirm').style.display='block';
+  if(ph==='shinobi'){
+    document.getElementById('shinobi-step2').style.display='block';
+    document.getElementById('normal-confirm-btn').style.display='none';
+    document.getElementById('shinobi-house').textContent='⏳ Se verifică casa...';
+    // Get house info
+    if(G.isHost){
+      const t=gp(tid);
+      document.getElementById('shinobi-house').textContent=t?`${hl(t.house)} — Rang ${t.rank}`:'???';
+    } else {
+      await fbSet(`rooms/${G.roomCode}/state/shinobiPeek/${G.myId}`,tid);
+      await fbTs();
+      for(let i=0;i<12;i++){
+        await sleep(800);
+        const resp=await fbGet(`rooms/${G.roomCode}/state/shinobiResp/${G.myId}`);
+        if(resp){document.getElementById('shinobi-house').textContent=`${hl(resp.house)} — Rang ${resp.rank}`;break;}
+      }
+    }
+  } else {
+    document.getElementById('shinobi-step2').style.display='none';
+    document.getElementById('normal-confirm-btn').style.display='block';
+  }
+}
+
+async function doConfirmAction(cid,ph){
+  if(!G.selectedTarget){notify('⚠ Alege un jucător!');return;}
+  await submitAction(ph,cid,G.selectedTarget,false);
+}
+async function doShinobiKill(cid){
+  if(!G.selectedTarget){notify('⚠ Alege un jucător!');return;}
+  await submitAction('shinobi',cid,G.selectedTarget,false);
+}
+async function doSkip(cid,ph){await submitAction(ph,cid,null,true);}
+
+async function submitAction(ph,cardId,targetId,skipped){
+  const action={playerId:G.myId,cardId,targetId,skipped:!!skipped,ts:Date.now()};
+  await fbSet(`rooms/${G.roomCode}/state/actions/${ph}/${G.myId}`,action);
+  await fbTs();
+  document.getElementById('act-body').innerHTML='<p style="color:var(--jade);text-align:center;padding:18px;font-size:13px">✓ Acțiune trimisă! Așteptând ceilalți...</p>';
+  if(!skipped)notify('✓ Acțiune confirmată!');
+}
+
+// ── HOST: RESOLVE NIGHT PHASE ──
+async function hostResolveNightPhase(ph,actions,st){
+  const kills=st.kills||{};
+  const blockList=st.blockList||[];
+  const privateMsg=st.private||{};
+  const mastermind=[...(st.mastermind||[])];
+
+  for(const[,action] of Object.entries(actions)){
+    if(action.skipped||!action.targetId||!action.cardId)continue;
+    const actor=gp(action.playerId);
+    const target=gp(action.targetId);
+    if(!actor||!target)continue;
+    const c=gc(action.cardId);if(!c)continue;
+
+    if(ph==='spy'){
+      const msg=`🕵️ ${target.name} = ${hl(target.house||'?')}${target.rank?' (Rang '+target.rank+')':''}`;
+      privateMsg[actor.id]={msg,icon:'🕵️',ts:Date.now()};
+      alog('li',`🕵️ ${actor.name} a investigat.`);
+    }
+    if(ph==='mystic'){
+      const rcard=target.hand&&target.hand.length?gc(target.hand[0]):null;
+      const info=rcard?` · Carte: ${rcard.icon} ${rcard.name}`:'';
+      privateMsg[actor.id]={msg:`🔮 ${target.name} = ${hl(target.house||'?')}${info}`,icon:'🔮',ts:Date.now()};
+      alog('li',`🔮 ${actor.name} a folosit Mystic.`);
+    }
+    if(ph==='trickster'){
+      if(c.id==='tri1'){// Shapeshifter
+        const tmp={h:actor.house,r:actor.rank};actor.house=target.house;actor.rank=target.rank;target.house=tmp.h;target.rank=tmp.r;
+        privateMsg[actor.id]={msg:`🦊 Casele tale și ale lui ${target.name} au fost schimbate!`,icon:'🦊',ts:Date.now()};
+        privateMsg[target.id]={msg:`🦊 ${actor.name} ți-a schimbat casa!`,icon:'🦊',ts:Date.now()};
+        alog('li',`🦊 Shapeshifter: ${actor.name} ↔ ${target.name}`);
+      }else if(c.id==='tri3'){alog('li',`🎭 Puppeteer: ${target.name} = ${hl(target.house||'?')}!`);
+      }else if(c.id==='tri4'){blockList.push(target.id);privateMsg[target.id]={msg:'🌑 Ai fost blocat de Shadow!',icon:'🌑',ts:Date.now()};alog('li',`🌑 Shadow: ${target.name} blocat.`);
+      }else if(c.id==='tri6'){// Decoy
+        const tmp={h:actor.house,r:actor.rank};actor.house=target.house;actor.rank=target.rank;target.house=tmp.h;target.rank=tmp.r;
+        alog('li',`🪆 Decoy: ${actor.name} ↔ ${target.name}`);
+      }else{alog('li',`🃏 ${actor.name} a jucat ${c.name}.`);}
+    }
+    if(ph==='blind_assassin'||ph==='shinobi'){
+      const hasMirror=!!(target.hand&&target.hand.includes('mirror'));
+      if(hasMirror){
+        if(!kills[actor.id]){kills[actor.id]=true;alog('lk',`🪞 Mirror Monk! Atacul lui ${actor.name} se întoarce — ${actor.name} cade!`);}
+      } else {
+        if(!kills[target.id]){kills[target.id]=true;alog('lk',`${ph==='shinobi'?'⚔️ Shinobi':'🗡️'} ${actor.name} l-a eliminat pe ${target.name}!`);}
+        if(target.hand&&target.hand.includes('martyr')){
+          const mts=G.players.filter(p=>p.alive&&p.id!==target.id&&!kills[p.id]);
+          if(mts.length){const mt=mts[0|Math.random()*mts.length];kills[mt.id]=true;alog('lk',`💀 Martyr: ${target.name} l-a târât pe ${mt.name}!`);}
+        }
+      }
+    }
+    if(c.id==='mastermind')mastermind.push(actor.house);
+  }
+
+  // Apply kills
+  Object.keys(kills).forEach(vid=>{const p=gp(vid);if(p)p.alive=false;});
+
+  // Advance to next phase
+  const phIdx=PHASE_ORDER.indexOf(ph);
+  const nextPh=phIdx>=PHASE_ORDER.length-1?'done':PHASE_ORDER[phIdx+1];
+  G.nightPhase=nextPh;
+
+  await fbPatch(`rooms/${G.roomCode}/state`,{
+    nightPhase:nextPh,players:G.players,kills,blockList,mastermind,private:privateMsg,ts:Date.now()
+  });
+  alog('ls','▶ '+phLbl(nextPh));
+  renderNightBanner();
+  renderNightPlayerList();
+  if(nextPh!=='done')await showNightAction(await fbGet(`rooms/${G.roomCode}/state`));
+}
+
+// ── HOST: NIGHT END → REVEAL ──
+async function hostResolveNightEnd(st){
+  const alive=G.players.filter(p=>p.alive&&p.house!=='ronin');
+  const mastermind=st&&st.mastermind||[];
+  let winHouse=null;
+  if(mastermind.length>0){winHouse=mastermind[0];alog('ls',`👑 Mastermind: ${hl(winHouse)} câștigă!`);}
+  else{let best=9999;alive.forEach(p=>{if(p.rank<best){best=p.rank;winHouse=p.house;}});}
+  const tokens={};
+  if(winHouse){
+    const tv=G.honorBag.length?G.honorBag.pop():2;
+    G.players.filter(p=>p.house===winHouse).forEach(p=>{G.honor[p.id]=(G.honor[p.id]||0)+tv;tokens[p.id]=tv;});
+    alog('ls',`🏆 ${hl(winHouse)} câștigă runda ${G.round}!`);
+  }
+  G.players.filter(p=>p.house==='ronin'&&p.alive).forEach(p=>{
+    const rv=G.honorBag.length?G.honorBag.pop():2;
+    G.honor[p.id]=(G.honor[p.id]||0)+rv;tokens[p.id]=rv;
+    alog('ls',`🟣 Ronin ${p.name}: +${rv} pct!`);
+  });
+  await fbPatch(`rooms/${G.roomCode}/state`,{phase:'reveal',honor:G.honor,winHouse,tokens,players:G.players,ts:Date.now()});
+  showReveal(winHouse,tokens);
+}
+
+// ── REVEAL ──
+function showReveal(winHouse,tokens){
+  G.phase='reveal';go('s-reveal');
+  document.getElementById('rev-title').textContent=winHouse?`🏆 ${hl(winHouse)} câștigă runda ${G.round}!`:`Runda ${G.round} — Niciun câștigător`;
+  document.getElementById('rev-players').innerHTML=G.players.map(p=>`
+    <div class="pi ${p.house===winHouse?'me':''}">
+      <div class="av">${p.avatar}</div>
+      <div class="pname">${p.name}</div>
+      <span class="tag tag-${p.house}">${hl(p.house)}</span>
+      ${p.house!=='ronin'?`<span style="font-size:10px;color:rgba(242,237,227,.35)">R${p.rank}</span>`:''}
+      <span style="margin-left:auto;font-size:14px">${p.alive?'✅':'☠️'}</span>
+      ${tokens&&tokens[p.id]?`<span class="hbadge">+${tokens[p.id]}⭐</span>`:''}
+    </div>`).join('');
+  document.getElementById('rev-scores').innerHTML=G.players.slice().sort((a,b)=>(G.honor[b.id]||0)-(G.honor[a.id]||0)).map(p=>`
+    <div class="hbar">
+      <span class="hbar-name">${p.avatar} ${p.name}</span>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${Math.min(100,((G.honor[p.id]||0)/10)*100)}%;background:${hc(p.house)}"></div></div>
+      <span class="hbar-score">${G.honor[p.id]||0}</span>
+    </div>`).join('');
+  if(G.isHost){
+    document.getElementById('host-rev-btn').style.display='block';
+    document.getElementById('guest-rev-wait').style.display='none';
+    const winner=G.players.find(p=>(G.honor[p.id]||0)>=10);
+    document.getElementById('rev-next').textContent=winner?'🏆 Joc terminat!':'⚔ Următoarea Rundă';
+  }else{
+    document.getElementById('host-rev-btn').style.display='none';
+    document.getElementById('guest-rev-wait').style.display='block';
+  }
+}
+
+async function hostNextOrWin(){
+  const winner=G.players.find(p=>(G.honor[p.id]||0)>=10);
+  if(winner){
+    await fbPatch(`rooms/${G.roomCode}/state`,{phase:'win',winnerId:winner.id,honor:G.honor,players:G.players,ts:Date.now()});
+    showWin(winner.id);return;
+  }
+  await hostStartRound();
+}
+
+// ── WIN ──
+function showWin(wid){
+  G.phase='win';go('s-win');
+  const w=gp(wid)||{name:'?',avatar:'🏆',house:'crane'};
+  document.getElementById('win-title').innerHTML=`<span style="color:${hc(w.house)}">${w.avatar} ${w.name} câștigă!</span>`;
+  document.getElementById('win-icon').textContent={crane:'🔴',lotus:'🔵',ronin:'🟣'}[w.house]||'🏆';
+  document.getElementById('win-scores').innerHTML=G.players.slice().sort((a,b)=>(G.honor[b.id]||0)-(G.honor[a.id]||0)).map((p,i)=>`
+    <div class="hbar">
+      <span class="hbar-name"><b style="color:var(--gold);margin-right:4px">${i+1}.</b>${p.avatar} ${p.name} <span class="tag tag-${p.house}" style="margin-left:4px;font-size:9px">${p.house}</span></span>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${Math.min(100,((G.honor[p.id]||0)/10)*100)}%;background:${hc(p.house)}"></div></div>
+      <span class="hbar-score">${G.honor[p.id]||0}⭐</span>
+    </div>`).join('');
+  document.getElementById('win-msg').textContent=`${hl(w.house)} triumfă cu ${G.honor[wid]||'?'} pct după ${G.round} runde!`;
+}
+
+// ── ROLE REVEAL ──
+function showRoleReveal(){
+  const mp=me();if(!mp)return;
+  const h=mp.house||'crane';
+  const hbox=document.getElementById('role-house-box');
+  hbox.className=`hbox hbox-${h}`;
+  hbox.innerHTML=`<div class="hbox-title ${h}-text">${hl(h)}</div>
+    <div style="font-size:13px;font-weight:600;color:rgba(242,237,227,.55);margin-top:4px">Rang ${mp.rank||'?'}</div>
+    <div style="font-size:11px;color:rgba(242,237,227,.3);margin-top:5px">⚠ NU arăta altora ecranul!</div>`;
+  document.getElementById('role-cards').innerHTML=(G.myHand||[]).map(cid=>{
+    const c=gc(cid);if(!c)return '';
+    return `<div class="nc nc-${c.type}" style="cursor:default">
+      <div class="nc-icon">${c.icon}</div><div class="nc-rank">${c.rank}</div>
+      <div class="nc-name">${c.name}</div><div class="nc-desc">${c.desc}</div>
+    </div>`;}).join('');
+  document.getElementById('o-role').classList.add('show');
+}
+function confirmRole(){document.getElementById('o-role').classList.remove('show');}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const a=document.querySelector('.screen.active');if(!a)return;
+  if(a.id==='s-setup')saveFirebase();
+  else if(a.id==='s-home'){const c=(document.getElementById('icode').value||'').trim();c.length===4?doJoin():doCreate();}
+  else if(a.id==='s-draft'){const b=document.getElementById('draft-btn');if(b&&!b.disabled)confirmDraft();}
+});
+
+// ── PERIODIC LOBBY SYNC (host → guests) ──
+setInterval(async()=>{
+  if(!G.isHost||G.phase!=='lobby')return;
+  const st=await fbGet(`rooms/${G.roomCode}/state`);
+  if(st&&st.players&&st.players.length!==G.players.length){
+    G.players=st.players;G.honor=st.honor||G.honor;renderLobby();
+  }
+},2500);
+
+console.log('🥷 Night of the Ninja v3 — Gata!');
+</script>
+</body>
+</html>
